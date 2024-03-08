@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:XMLtoPDF"
-        xmlns:properties="clr-namespace:XMLtoPDF.Properties"
+        xmlns:properties="clr-namespace:FatEle2PDF.Properties"
         mc:Ignorable="d"
         Title="Fattura Elettronica a PDF" Height="280" Width="600" Background="#092635" Foreground="#092635" BorderBrush="#FF092635"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" Closing="Window_Closing" Name="mWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
@@ -45,6 +44,13 @@
             <Setter Property="Foreground" Value="#9EC8B9"></Setter>
             <Setter Property="Margin" Value="0"></Setter>
             <Setter Property="Padding" Value="3"></Setter>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#9EC8B9"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
         </Style>
         <Style TargetType="ComboBox">
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -302,7 +308,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Name="LabelSelezione" Grid.Column="0"></Label>
                     <Button Height="40" Click="StartButton" Name="ConvertiButton" Content="Converti" Grid.Column="1" Width="180"></Button>
-                    <Label Name="LabelErrori" Grid.Column="2" FontSize="13"></Label>
+                    <TextBlock Name="LabelErrori" Grid.Column="2" FontSize="13" Visibility="Hidden">Elaborazione completata con<LineBreak></LineBreak> errori, apri il <Hyperlink Click="ApriLog">file di Log</Hyperlink></TextBlock>
                 </Grid>
                 
                 

@@ -10,9 +10,9 @@ using System.Security.Cryptography.Pkcs;
 using iText.Kernel.Utils;
 using iText.Kernel.Pdf;
 using System.Text;
-using System.Reflection;
 using System.Configuration;
-using XMLtoPDF.Properties;
+using System.Diagnostics;
+using FatEle2PDF.Properties;
 
 
 namespace XMLtoPDF
@@ -81,13 +81,13 @@ namespace XMLtoPDF
                 await Task.Run(() => Convert2Pdf(files, combina, ordine, creDecr));
                 ConvertiButton.Content = "Converti";
                 mWindow.IsEnabled = true;
-                if (errCounter > 1)
+                if (errCounter > 0)
                 {
-                    LabelErrori.Content = $"Elaborazione completata con\n{errCounter} errori";
+                    LabelErrori.Visibility = Visibility.Visible;
                 }
-                else if (errCounter > 0)
+                else
                 {
-                    LabelErrori.Content = $"Elaborazione completata con\n{errCounter} errore";
+                    LabelErrori.Visibility= Visibility.Hidden;
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace XMLtoPDF
 
             XslCompiledTransform xslTransform = new XslCompiledTransform();
 
-            using (var reader = new StringReader(XMLtoPDF.Properties.Resources.FoglioStile))
+            using (var reader = new StringReader(FatEle2PDF.Properties.Resources.FoglioStile))
             {
                 using (XmlReader xmlReader = XmlReader.Create(reader))
                 {
@@ -156,7 +156,7 @@ namespace XMLtoPDF
                 catch (Exception ex)
                 {
                     errCounter++;
-                    errorBuilder.Append($"Errore su file {file} : {ex.Message}");
+                    errorBuilder.Append($"Errore su file {file}: {ex.Message}");
                 }
                 
                 
@@ -243,7 +243,8 @@ namespace XMLtoPDF
             }
             await browser.DisposeAsync();
             CancellaFiles(listaMerge);
-            File.AppendAllText(Path.Combine(GetUserAppDataPath(), $"log {DateTime.Now.ToString("dd.MM.yyyy HH-mm-ss")}.txt"), errorBuilder.ToString());
+            //File.AppendAllText(Path.Combine(Path.GetDirectoryName(GetConfigPath()), $"log {DateTime.Now.ToString("dd.MM.yyyy HH-mm-ss")}.txt"), errorBuilder.ToString());
+            File.WriteAllText(Path.Combine(Path.GetDirectoryName(GetConfigPath()), "log.txt"), errorBuilder.ToString());
             errorBuilder.Clear();
         }
 
@@ -292,7 +293,7 @@ namespace XMLtoPDF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            XMLtoPDF.Properties.Settings.Default.Save();
+            FatEle2PDF.Properties.Settings.Default.Save();
             CancellaFiles(listaDel);
             CancellaFiles(listaMerge);
         }
@@ -348,8 +349,7 @@ namespace XMLtoPDF
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            string configPath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            if (!File.Exists(configPath))
+            if (!File.Exists(GetConfigPath()))
             {
                 //Existing user config does not exist, so load settings from previous assembly
                 Settings.Default.Upgrade();
@@ -358,34 +358,29 @@ namespace XMLtoPDF
             }
         }
 
+        public string GetConfigPath()
+        {
+            return ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+        }
+
+        private void ApriLog(object sender, RoutedEventArgs e)
+        {
+            string logPath = Path.Combine(Path.GetDirectoryName(GetConfigPath()), "log.txt");
+            if (File.Exists(logPath))
+            {
+                ProcessStartInfo psi = new ProcessStartInfo(logPath);
+                psi.Verb = "open";
+                psi.UseShellExecute = true;
+                Process.Start(psi);
+
+            }
+        }
+
         private void Checked(object sender, RoutedEventArgs e)
         {
             SelectedFileDest.Text = null;
             percorsoFileDest = null;
         }
-        public string GetUserAppDataPath()
-        {
-            string path = string.Empty;
-            Assembly assm;
-            Type at;
-            object[] r;
 
-            // Get the .EXE assembly
-            assm = Assembly.GetEntryAssembly();
-            // Get a 'Type' of the AssemblyCompanyAttribute
-            at = typeof(AssemblyCompanyAttribute);
-            // Get a collection of custom attributes from the .EXE assembly
-            r = assm.GetCustomAttributes(at, false);
-            // Get the Company Attribute
-            AssemblyCompanyAttribute ct =
-                          ((AssemblyCompanyAttribute)(r[0]));
-            // Build the User App Data Path
-            path = Environment.GetFolderPath(
-                        Environment.SpecialFolder.LocalApplicationData);
-            path += @"\" + ct.Company;
-            path += @"\" + assm.GetName().Version.ToString();
-
-            return path;
-        }
     }
 }
