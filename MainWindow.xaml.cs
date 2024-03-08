@@ -11,6 +11,8 @@ using iText.Kernel.Utils;
 using iText.Kernel.Pdf;
 using System.Text;
 using System.Reflection;
+using System.Configuration;
+using XMLtoPDF.Properties;
 
 
 namespace XMLtoPDF
@@ -342,6 +344,18 @@ namespace XMLtoPDF
                 }
             }
             listaDel.Clear();
+        }
+
+        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            string configPath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            if (!File.Exists(configPath))
+            {
+                //Existing user config does not exist, so load settings from previous assembly
+                Settings.Default.Upgrade();
+                Settings.Default.Reload();
+                Settings.Default.Save();
+            }
         }
 
         private void Checked(object sender, RoutedEventArgs e)

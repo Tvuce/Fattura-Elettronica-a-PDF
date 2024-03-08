@@ -240,7 +240,7 @@
     </Window.Resources>
     <Viewbox>
         <Grid Height="230" Width="600">
-            <StackPanel Margin="5">
+            <StackPanel Margin="10" Loaded="StackPanel_Loaded">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" HorizontalAlignment="Right">Ordina per</Label>
                     <RadioButton Margin="5" IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=cre, Mode=TwoWay}" Name="CreRadio">
