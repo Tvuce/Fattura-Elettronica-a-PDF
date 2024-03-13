@@ -347,7 +347,14 @@ namespace XMLtoPDF
             listaDel.Clear();
         }
 
-        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+
+        public string GetConfigPath()
+        {
+            return ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+        }
+
+
+        private void mWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(GetConfigPath()))
             {
@@ -358,9 +365,13 @@ namespace XMLtoPDF
             }
         }
 
-        public string GetConfigPath()
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            return ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            ProcessStartInfo psi = new ProcessStartInfo(e.Uri.AbsoluteUri);
+            psi.Verb = "open";
+            psi.UseShellExecute = true;
+            Process.Start(psi);
+            e.Handled = true;
         }
 
         private void ApriLog(object sender, RoutedEventArgs e)

@@ -6,7 +6,7 @@
         xmlns:properties="clr-namespace:FatEle2PDF.Properties"
         mc:Ignorable="d"
         Title="Fattura Elettronica a PDF" Height="280" Width="600" Background="#092635" Foreground="#092635" BorderBrush="#FF092635"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" Closing="Window_Closing" Name="mWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" Closing="Window_Closing" Name="mWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="mWindow_Loaded">
     <Window.Resources>
         <Style TargetType="StackPanel">
             <Setter Property="HorizontalAlignment" Value="Left"></Setter>
@@ -245,19 +245,30 @@
         </ControlTemplate>
     </Window.Resources>
     <Viewbox>
-        <Grid Height="230" Width="600">
-            <StackPanel Margin="10" Loaded="StackPanel_Loaded">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" HorizontalAlignment="Right">Ordina per</Label>
-                    <RadioButton Margin="5" IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=cre, Mode=TwoWay}" Name="CreRadio">
-                        <Image Source="Resources/uparrow.png" Width="10"></Image>
-                    </RadioButton>
-                    <RadioButton Margin="5" IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=decr, Mode=TwoWay}" Name="DecrRadio">
-                        <Image Source="Resources/downarrow.png" Width="10"></Image>
-                    </RadioButton>
-                </StackPanel>
-                
-                
+        <Grid Height="250" Width="600">
+            <StackPanel Margin="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock HorizontalAlignment="Left" Grid.Column="0" Padding="10 0 0 0">
+                        <Hyperlink NavigateUri="https://github.com/Tvuce/Fattura-Elettronica-a-PDF/releases" RequestNavigate="Hyperlink_RequestNavigate">Sito Web</Hyperlink>
+                    </TextBlock>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Label IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" HorizontalAlignment="Right">Ordina per</Label>
+                        <RadioButton Margin="5" IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=cre, Mode=TwoWay}" Name="CreRadio">
+                            <Image Source="Resources/uparrow.png" Width="10"></Image>
+                        </RadioButton>
+                        <RadioButton Margin="5" IsEnabled="{Binding IsChecked, ElementName=RadioCombine}" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=decr, Mode=TwoWay}" Name="DecrRadio">
+                            <Image Source="Resources/downarrow.png" Width="10"></Image>
+                        </RadioButton>
+                    </StackPanel>
+                    
+                </Grid>
+
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <RadioButton Name="RadioSingle" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=singleXML, Mode=TwoWay}" Click="Checked">Crea PDF per ogni XML</RadioButton>
                     <RadioButton Name="RadioCombine" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=multiXML, Mode=TwoWay}" Click="Checked">Combina XML in un solo PDF</RadioButton>
