@@ -37,13 +37,6 @@ namespace XMLtoPDF
             listaMerge = new List<string>();
             errCounter = 0;
 
-            if (!File.Exists(GetConfigPath()))
-            {
-                //Existing user config does not exist, so load settings from previous assembly
-                Settings.Default.Upgrade();
-                Settings.Default.Reload();
-                Settings.Default.Save();
-            }
 
             TxtVersione.Text = "Versione " + Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
             options = new PdfOptions();
@@ -296,7 +289,7 @@ namespace XMLtoPDF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            FatEle2PDF.Properties.Settings.Default.Save();
+            Settings.Default.Save();
             CancellaFiles(listaDel);
             CancellaFiles(listaMerge);
         }
@@ -359,7 +352,15 @@ namespace XMLtoPDF
 
         private void mWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            if (Settings.Default.init == true)
+            {
+                //Existing user config does not exist, so load settings from previous assembly
+                Settings.Default.init = false;
+                Settings.Default.Save();
+                Settings.Default.Upgrade();
+                Settings.Default.Reload();
+                Settings.Default.Save();
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
