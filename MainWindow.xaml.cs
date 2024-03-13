@@ -13,6 +13,8 @@ using System.Text;
 using System.Configuration;
 using System.Diagnostics;
 using FatEle2PDF.Properties;
+using System.Reflection;
+using FatEle2PDF.Classes;
 
 
 namespace XMLtoPDF
@@ -27,26 +29,6 @@ namespace XMLtoPDF
         PdfOptions options;
         string percorsoFileDest;
         int errCounter;
-        struct XML
-        {
-            private string _filePath;
-            private string _RSoc;
-            private double _totImp;
-            private string _pIVA;
-
-            public string filePath => _filePath;
-            public string RSoc => _RSoc;
-            public double totImp => _totImp;
-            public string pIVA => _pIVA;
-            public XML(string filePath, string rsoc, double totImp, string pIva)
-            {
-                _filePath = filePath;
-                _pIVA = pIva;
-                _RSoc = rsoc;
-                _totImp = totImp;
-            }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -55,6 +37,15 @@ namespace XMLtoPDF
             listaMerge = new List<string>();
             errCounter = 0;
 
+            if (!File.Exists(GetConfigPath()))
+            {
+                //Existing user config does not exist, so load settings from previous assembly
+                Settings.Default.Upgrade();
+                Settings.Default.Reload();
+                Settings.Default.Save();
+            }
+
+            TxtVersione.Text = "Versione " + Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
             options = new PdfOptions();
             options.Format = PaperFormat.A4;
             options.MarginOptions = new MarginOptions
@@ -128,6 +119,7 @@ namespace XMLtoPDF
                     string rSoc = string.Empty;
                     double totImp = 0;
                     string pIva = string.Empty;
+                    DateOnly dDoc = new();
 
                     if (doc.DocumentElement.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/Anagrafica/Denominazione") != null)
                     {
@@ -139,9 +131,9 @@ namespace XMLtoPDF
                         rSoc = doc.DocumentElement.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/Anagrafica/Cognome").InnerText + doc.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/Anagrafica/Nome").InnerText;
                     }
 
-                    if (doc.DocumentElement.SelectSingleNode("//FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/ImportoTotaleDocumento") != null)
+                    if (doc.DocumentElement.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/IdFiscaleIVA/IdCodice") != null)
                     {
-                        totImp = Convert.ToDouble(doc.DocumentElement.SelectSingleNode("//FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/ImportoTotaleDocumento").InnerText);
+                        dDoc = DateOnly.Parse(doc.SelectSingleNode("//FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/Data").InnerText);
                     }
 
                     if (doc.DocumentElement.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/IdFiscaleIVA/IdCodice") != null)
@@ -149,7 +141,14 @@ namespace XMLtoPDF
                         pIva = doc.DocumentElement.SelectSingleNode("//FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/IdFiscaleIVA/IdCodice").InnerText;
                     }
 
-                    XML xml = new XML(fileXML, rSoc, totImp, pIva);
+                    if (doc.DocumentElement.SelectSingleNode("//FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/ImportoTotaleDocumento") != null)
+                    {
+                        totImp = Convert.ToDouble(doc.DocumentElement.SelectSingleNode("//FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/ImportoTotaleDocumento").InnerText);
+                    }
+
+                    
+
+                    XML xml = new XML(fileXML, rSoc, dDoc, pIva, totImp);
 
                     listaXML.Add(xml);
                 }
@@ -167,13 +166,17 @@ namespace XMLtoPDF
                 switch (ordine)
                 {
                     case 0:
-                        listaXML.Sort((x, y) => creDecr * x.RSoc.CompareTo(y.RSoc));
+                        listaXML.Sort(new DDocComparer());
                         break;
                     case 1:
-                        listaXML.Sort((x, y) => creDecr * x.totImp.CompareTo(y.totImp));
+                        listaXML.Sort(new RSocComparer());
+                        //listaXML.Sort((x, y) => creDecr * x.RSoc.CompareTo(y.RSoc));
                         break;
                     case 2:
-                        listaXML.Sort((x, y) => creDecr * x.pIVA.CompareTo(y.pIVA));
+                        listaXML.Sort(new PIvaComparer());
+                        break;
+                    case 3:
+                        listaXML.Sort(new TotImpComparer());
                         break;
                 }
             }
@@ -356,13 +359,7 @@ namespace XMLtoPDF
 
         private void mWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(GetConfigPath()))
-            {
-                //Existing user config does not exist, so load settings from previous assembly
-                Settings.Default.Upgrade();
-                Settings.Default.Reload();
-                Settings.Default.Save();
-            }
+            
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
