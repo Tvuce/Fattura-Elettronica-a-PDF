@@ -49,30 +49,6 @@ namespace FatEle2PDF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool cre {
-            get {
-                return ((bool)(this["cre"]));
-            }
-            set {
-                this["cre"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool decr {
-            get {
-                return ((bool)(this["decr"]));
-            }
-            set {
-                this["decr"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int comboSel {
             get {
@@ -92,6 +68,30 @@ namespace FatEle2PDF.Properties {
             }
             set {
                 this["init"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool decr {
+            get {
+                return ((bool)(this["decr"]));
+            }
+            set {
+                this["decr"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool cre {
+            get {
+                return ((bool)(this["cre"]));
+            }
+            set {
+                this["cre"] = value;
             }
         }
     }

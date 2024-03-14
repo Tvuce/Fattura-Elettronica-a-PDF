@@ -1,4 +1,6 @@
-﻿namespace FatEle2PDF.Classes
+﻿using FatEle2PDF.Properties;
+
+namespace FatEle2PDF.Classes
 {
     public class XML
     {
@@ -7,7 +9,6 @@
         private DateOnly _dDoc;
         private string _pIVA;
         private double _totImp;
-
 
         public string filePath => _filePath;
         public string RSoc => _RSoc;
@@ -25,7 +26,7 @@
         }
 
     }
-    public class RSocComparer : IComparer<XML>
+    public class RSocComparerAsc : IComparer<XML>
     {
         public int Compare(XML? x, XML? y)
         {
@@ -39,8 +40,21 @@
             }
         }
     }
-
-    public class DDocComparer : IComparer<XML>
+    public class RSocComparerDesc : IComparer<XML>
+    {
+        public int Compare(XML? x, XML? y)
+        {
+            if (x.RSoc == y.RSoc)
+            {
+                return x.dDoc.CompareTo(y.dDoc);
+            }
+            else
+            {
+                return y.RSoc.CompareTo(x.RSoc);
+            }
+        }
+    }
+    public class DDocComparerAsc : IComparer<XML>
     {
         public int Compare(XML? x, XML? y)
         {
@@ -48,7 +62,15 @@
         }
     }
 
-    public class PIvaComparer : IComparer<XML>
+    public class DDocComparerDesc : IComparer<XML>
+    {
+        public int Compare(XML? x, XML? y)
+        {
+            return y.dDoc.CompareTo(x.dDoc);
+        }
+    }
+
+    public class PIvaComparerAsc : IComparer<XML>
     {
         public int Compare(XML? x, XML? y)
         {
@@ -62,8 +84,21 @@
             }
         }
     }
-
-    public class TotImpComparer : IComparer<XML>
+    public class PIvaComparerDesc : IComparer<XML>
+    {
+        public int Compare(XML? x, XML? y)
+        {
+            if (x.pIVA == y.pIVA)
+            {
+                return x.dDoc.CompareTo(y.dDoc);
+            }
+            else
+            {
+                return y.pIVA.CompareTo(x.pIVA);
+            }
+        }
+    }
+    public class TotImpComparerAsc : IComparer<XML>
     {
         public int Compare(XML? x, XML? y)
         {
@@ -74,6 +109,20 @@
             else
             {
                 return x.totImp.CompareTo(y.totImp);
+            }
+        }
+    }
+    public class TotImpComparerDesc : IComparer<XML>
+    {
+        public int Compare(XML? x, XML? y)
+        {
+            if (x.totImp == y.totImp)
+            {
+                return x.dDoc.CompareTo(y.dDoc);
+            }
+            else
+            {
+                return y.totImp.CompareTo(x.totImp);
             }
         }
     }

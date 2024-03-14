@@ -59,9 +59,7 @@ namespace XMLtoPDF
                 ConvertiButton.Content = $"Elaborazione di {files.Count} XML";
                 bool combina = RadioCombine.IsChecked ?? false;
                 int ordine = Ordine.SelectedIndex;
-                int creDecr = 1;
-                if (DecrRadio.IsChecked == true) creDecr = -1;
-
+                bool creDecr = RadioCombine.IsChecked ?? false;
                 await Task.Run(() => Convert2Pdf(files, combina, ordine, creDecr));
                 ConvertiButton.Content = "Converti";
                 mWindow.IsEnabled = true;
@@ -76,7 +74,7 @@ namespace XMLtoPDF
             }
         }
 
-        public async Task Convert2Pdf(List<string> files, bool combina, int ordine, int creDecr)
+        public async Task Convert2Pdf(List<string> files, bool combina, int ordine, bool creDecr)
         {
             List<XML> listaXML = new List<XML>();
             StringBuilder errorBuilder = new StringBuilder();
@@ -159,17 +157,16 @@ namespace XMLtoPDF
                 switch (ordine)
                 {
                     case 0:
-                        listaXML.Sort(new DDocComparer());
+                        if (creDecr) listaXML.Sort(new DDocComparerAsc()); else listaXML.Sort(new DDocComparerDesc());
                         break;
                     case 1:
-                        listaXML.Sort(new RSocComparer());
-                        //listaXML.Sort((x, y) => creDecr * x.RSoc.CompareTo(y.RSoc));
+                        if (creDecr) listaXML.Sort(new RSocComparerAsc()); else listaXML.Sort(new RSocComparerDesc());
                         break;
                     case 2:
-                        listaXML.Sort(new PIvaComparer());
+                        if (creDecr) listaXML.Sort(new PIvaComparerAsc()); else listaXML.Sort(new PIvaComparerDesc());
                         break;
                     case 3:
-                        listaXML.Sort(new TotImpComparer());
+                        if (creDecr) listaXML.Sort(new TotImpComparerAsc()); else listaXML.Sort(new TotImpComparerDesc());
                         break;
                 }
             }
@@ -239,6 +236,7 @@ namespace XMLtoPDF
             }
             await browser.DisposeAsync();
             CancellaFiles(listaMerge);
+            CancellaFiles(listaDel);
             //File.AppendAllText(Path.Combine(Path.GetDirectoryName(GetConfigPath()), $"log {DateTime.Now.ToString("dd.MM.yyyy HH-mm-ss")}.txt"), errorBuilder.ToString());
             File.WriteAllText(Path.Combine(Path.GetDirectoryName(GetConfigPath()), "log.txt"), errorBuilder.ToString());
             errorBuilder.Clear();
