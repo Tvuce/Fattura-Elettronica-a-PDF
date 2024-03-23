@@ -4,6 +4,6 @@ Fattura Elettronica a PDF è una semplice app che permette di convertire le fatt
 Può creare un singolo PDF per ogni fattura o unire tutte le fatture in un solo documento PDF ordinandole.  
 Attualmente possono essere ordinate per:
 - Data documento
-- Ragione sociale
+- Ragione sociale fornitore
 - Importo totale
 - Partita IVA
